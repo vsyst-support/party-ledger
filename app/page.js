@@ -176,6 +176,7 @@ export default function Home() {
       {modal && (
         <PartyModal
           party={modal.party}
+          categories={categories}
           saving={saving}
           onSave={handleSave}
           onDelete={handleDelete}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import DateInput from "@/components/DateInput";
 
 const emptyForm = () => ({
   date: new Date().toISOString().slice(0, 10),
@@ -65,12 +66,11 @@ export default function EntryModal({ entry, saving, onSave, onDelete, onClose })
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="eDate">Date</label>
-              <input
+              <DateInput
                 id="eDate"
-                type="date"
                 required
                 value={form.date}
-                onChange={e => set("date", e.target.value)}
+                onChange={v => set("date", v)}
               />
             </div>
             <div className="form-group">

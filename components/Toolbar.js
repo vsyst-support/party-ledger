@@ -86,8 +86,14 @@ export default function Toolbar({ filters, categories, onChange }) {
         {STATUSES.map(s => <option key={s}>{s}</option>)}
       </select>
       {hasFilters && (
-        <button type="button" className="btn-clear" onClick={() => onChange(NO_FILTERS)}>
-          &#10005; Clear
+        <button
+          type="button"
+          className="btn-clear"
+          aria-label="Clear filters"
+          title="Clear filters"
+          onClick={() => onChange(NO_FILTERS)}
+        >
+          &#10005;
         </button>
       )}
     </div>

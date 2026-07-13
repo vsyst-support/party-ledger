@@ -24,6 +24,7 @@ export default function PartyPage() {
   // modal: null = closed, { entry: null } = add, { entry: {...} } = edit
   const [modal, setModal] = useState(null);
   const [partyModalOpen, setPartyModalOpen] = useState(false);
+  const [query, setQuery] = useState("");
 
   const openEntryModal = (entry) => setModal({ entry });
 
@@ -129,17 +130,17 @@ export default function PartyPage() {
   const totalCr = entries.reduce((s, e) => s + e.cr, 0);
   const balance = totalDr - totalCr;
 
+  const q = query.trim().toLowerCase();
+  const visibleEntries = q
+    ? entries.filter(
+        (e) =>
+          (e.particulars || "").toLowerCase().includes(q) ||
+          (e.remarks || "").toLowerCase().includes(q),
+      )
+    : entries;
+
   return (
     <div className="container">
-      <header className="header-end">
-        <button
-          className="btn btn-primary header-new-btn"
-          onClick={() => openEntryModal(null)}
-        >
-          + New
-        </button>
-      </header>
-
       {error && <div className="alert-error">{error}</div>}
 
       {party && (
@@ -170,21 +171,10 @@ export default function PartyPage() {
                 >
                   {party.name}
                 </button>
-                <div className="party-card-meta">
-                  <span className="chip">{party.category}</span>
-                  <span className="party-card-date">
-                    {formatDate(party.date)}
-                  </span>
-                </div>
+                <span className="chip">{party.category}</span>
               </div>
             </div>
           </section>
-          <button
-            className="btn btn-primary mobile-new-btn"
-            onClick={() => openEntryModal(null)}
-          >
-            + New
-          </button>
         </div>
       )}
 
@@ -205,6 +195,32 @@ export default function PartyPage() {
         </div>
       </section>
 
+      <div className="toolbar toolbar-bare">
+        <input
+          type="search"
+          placeholder="Search particulars or remarks..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {query && (
+          <button
+            type="button"
+            className="btn-clear"
+            aria-label="Clear search"
+            title="Clear search"
+            onClick={() => setQuery("")}
+          >
+            &#10005;
+          </button>
+        )}
+        <button
+          className="btn btn-primary toolbar-new-btn"
+          onClick={() => openEntryModal(null)}
+        >
+          + New
+        </button>
+      </div>
+
       <div className="table-wrap entries-table">
         <table>
           <thead>
@@ -224,7 +240,7 @@ export default function PartyPage() {
             </tr>
           </thead>
           <tbody>
-            {entries.map((e) => (
+            {visibleEntries.map((e) => (
               <tr key={e.id}>
                 <td data-label="Date">
                   <button
@@ -277,13 +293,20 @@ export default function PartyPage() {
         </table>
         {loading ? (
           <div className="empty-state">Loading entries…</div>
+        ) : entries.length === 0 ? (
+          <div className="empty-state">
+            <div className="icon">&#128203;</div>
+            <p>
+              No entries yet. Click <strong>+ Add Entry</strong> to record the
+              first transaction.
+            </p>
+          </div>
         ) : (
-          entries.length === 0 && (
+          visibleEntries.length === 0 && (
             <div className="empty-state">
-              <div className="icon">&#128203;</div>
+              <div className="icon">&#128269;</div>
               <p>
-                No entries yet. Click <strong>+ Add Entry</strong> to record the
-                first transaction.
+                No entries match &ldquo;{query.trim()}&rdquo;.
               </p>
             </div>
           )
